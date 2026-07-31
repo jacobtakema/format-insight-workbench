@@ -392,6 +392,7 @@ get_integrated_format_details <- function(connection, puid, pronom_snapshot_id,
     raw_pronom_json = pronom_raw$raw_json,
     droid_xml_fragment = droid_fragment,
     consistency = format_consistency(observations, identifiers, extensions),
+    profile_statements = get_puid_profile_statements(connection, puid),
     unsupported = summaries,
     issues = issues
   )

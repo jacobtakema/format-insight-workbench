@@ -36,13 +36,17 @@ source(file.path(project_root, "R", "parser-common.R"))
 source(file.path(project_root, "R", "pronom-schema.R"))
 source(file.path(project_root, "R", "import-pronom-json.R"))
 source(file.path(project_root, "R", "import-droid-xml.R"))
+source(file.path(project_root, "R", "import-profile-nl-2024.R"))
 source(file.path(project_root, "R", "database.R"))
 source(file.path(project_root, "R", "persist-source-import.R"))
+source(file.path(project_root, "R", "persist-profile-import.R"))
 source(file.path(project_root, "R", "github-repository.R"))
 source(file.path(project_root, "R", "import-pronom-repository.R"))
 source(file.path(project_root, "R", "source-queries.R"))
+source(file.path(project_root, "R", "profile-queries.R"))
 source(file.path(project_root, "R", "mod-source-snapshots.R"))
 source(file.path(project_root, "R", "mod-pronom-explorer.R"))
+source(file.path(project_root, "R", "mod-profiles.R"))
 source(file.path(project_root, "R", "mod-import.R"))
 
 database_path <- workbench_database_path(project_root)
@@ -68,6 +72,9 @@ ui <- bs4Dash::bs4DashPage(
         "Format Explorer",
         tabName = "explorer",
         icon = shiny::icon("search")
+      ),
+      bs4Dash::bs4SidebarMenuItem(
+        "Profiles", tabName = "profiles", icon = shiny::icon("clipboard-list")
       ),
       bs4Dash::bs4SidebarMenuItem(
         "Import",
@@ -97,6 +104,9 @@ ui <- bs4Dash::bs4DashPage(
         format_explorer_ui("explorer")
       ),
       bs4Dash::bs4TabItem(
+        tabName = "profiles", shiny::h2("Profiles"), profiles_ui("profiles")
+      ),
+      bs4Dash::bs4TabItem(
         tabName = "import",
         shiny::h2("Import"),
         import_page_ui("import", examples)
@@ -117,6 +127,7 @@ server <- function(input, output, session) {
   refresh <- shiny::reactiveVal(0L)
   source_snapshots_server("snapshots", connection, refresh)
   format_explorer_server("explorer", connection, refresh)
+  profiles_server("profiles", connection, refresh)
   import_page_server("import", connection, examples, refresh)
 }
 

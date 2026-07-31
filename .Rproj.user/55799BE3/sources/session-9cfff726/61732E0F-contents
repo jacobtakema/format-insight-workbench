@@ -137,3 +137,15 @@ Policy mappings should be checked against a chosen successful technical snapshot
 8. Are MIME and extension comparisons case-sensitive for reporting purposes?
 9. Should successful imports with non-fatal warnings be represented by a separate status such as `succeeded_with_warnings`?
 10. How long should derived validation results be retained, and should repeated runs be grouped by a validation-run identifier?
+# Published profile workbook adapter
+
+The Nationaal Archief 2024 workbook is parsed by a dedicated source adapter.
+It returns normalised R data frames for profile metadata, entries, PUID
+mappings, rationale rows, deterministic rationale links, issues and summaries.
+The parser does not open DuckDB. Persistence receives that parser result and
+stores it in one transaction together with the immutable workbook snapshot.
+
+The adapter preserves worksheet names, source row numbers, raw row JSON,
+unrecognised or absent PUID values, duplicate assertions and all rationale
+rows. Only explicit PUID syntax and explicit numeric ranges are interpreted;
+names and extensions are never used to infer a PUID.

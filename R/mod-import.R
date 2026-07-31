@@ -97,6 +97,18 @@ import_page_ui <- function(id, examples) {
       "Import selected DROID file",
       icon = shiny::icon("file-import")
     ),
+    shiny::tags$hr(),
+    shiny::h4("Published format profile"),
+    shiny::fileInput(
+      namespace("profile_file"),
+      "Nationaal Archief preferred-formats workbook",
+      multiple = FALSE,
+      accept = c(".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    ),
+    shiny::actionButton(
+      namespace("import_profile_file"), "Import selected profile",
+      icon = shiny::icon("file-excel")
+    ),
     shiny::uiOutput(namespace("status"))
   )
 }
@@ -218,6 +230,28 @@ import_page_server <- function(id, connection, examples, refresh,
       result <- import_source_records(connection, records)
       if (result$success_count > 0L) refresh(refresh() + 1L)
       status(result$status)
+    })
+
+    shiny::observeEvent(input$import_profile_file, {
+      shiny::req(!is.null(input$profile_file), nrow(input$profile_file) == 1L)
+      upload <- input$profile_file
+      result <- tryCatch({
+        imported <- import_nl_profile_xlsx(
+          connection, upload$datapath[[1L]],
+          source_filename = basename(upload$name[[1L]]),
+          source_relative_path = gsub("\\\\", "/", upload$name[[1L]])
+        )
+        refresh(refresh() + 1L)
+        list(kind = "success", messages = sprintf(
+          "%s imported as profile snapshot %s.", upload$name[[1L]], imported$snapshot_id
+        ))
+      }, format_policy_duplicate_snapshot = function(error) {
+        list(kind = "warning", messages = conditionMessage(error))
+      }, error = function(error) {
+        list(kind = "danger", messages = sprintf("%s was not imported: %s",
+                                                  upload$name[[1L]], conditionMessage(error)))
+      })
+      status(result)
     })
 
     output$status <- shiny::renderUI({

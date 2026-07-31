@@ -230,6 +230,18 @@ format_explorer_server <- function(id, connection, refresh) {
               "snapshot but remains intentionally unsupported."
             )
           )
+        ),
+        bs4Dash::bs4Card(
+          title = "Contextual profile statements",
+          width = 12,
+          shiny::p(
+            class = "text-muted",
+            "These are assertions from imported profiles, not intrinsic PRONOM metadata."
+          ),
+          detail_table_ui(
+            "Profile references", detail$profile_statements,
+            "No imported profile references this PUID."
+          )
         )
       )
     })

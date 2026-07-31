@@ -323,3 +323,16 @@ The model is designed to support:
 - automated policy suggestions
 - codec/container relationships
 - preservation planning
+# Published format profiles
+
+Published guidance is represented separately from technical source metadata.
+`policy_profile` identifies the publication and its immutable source snapshot;
+`policy_entry` preserves each contextual statement; and `policy_entry_puid`
+stores zero, one, or many source-asserted PUID mappings without delimited
+database values. `profile_rationale` preserves supporting worksheet rows and
+`profile_entry_rationale` records deterministic links with their link method.
+
+Profile mapping status is derived from imported PRONOM observations. It does
+not change the source assertion and it is not a validation or compliance
+result. Workbook sheet names, row numbers, raw row data, filenames, URLs and
+the complete source bytes provide provenance.
