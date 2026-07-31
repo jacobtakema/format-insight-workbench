@@ -1,0 +1,25 @@
+{
+  "compatibilityId": "pronom-develop-2026-07.2",
+  "description": "Compatibility overlay for constraints in format_schema.json that are contradicted by records on the same PRONOM develop branch.",
+  "officialSchemaSha256": "c4c74f1326fc17d667bc1e165653118e11a5afc4e0ffc4b076ccf1621cb616cf",
+  "operations": [
+    {"op": "remove", "path": "/properties/releaseDate/format"},
+    {"op": "remove", "path": "/properties/withdrawnDate/format"},
+    {"op": "remove", "path": "/properties/lastUpdatedDate/format"},
+    {"op": "remove", "path": "/properties/formatSourceDate/format"},
+    {"op": "replace", "path": "/properties/version/type", "value": ["string", "null"]},
+    {"op": "replace", "path": "/properties/binaryFileFormat/type", "value": ["string", "null"]},
+    {"op": "replace", "path": "/properties/provenanceCompoundName/type", "value": ["string", "null"]},
+    {"op": "replace", "path": "/properties/formatDisclosure/type", "value": ["string", "null"]},
+    {"op": "replace", "path": "/properties/formatTypes/type", "value": ["string", "null"]},
+    {"op": "replace", "path": "/properties/byteOrders/type", "value": ["string", "null"]},
+    {"op": "replace", "path": "/properties/externalSignatures/items/properties/externalSignature/type", "value": ["string", "null"]},
+    {"op": "replace", "path": "/properties/internalSignatures/items/properties/note/type", "value": ["string", "null"]},
+    {"op": "replace", "path": "/properties/internalSignatures/items/required", "value": []},
+    {"op": "replace", "path": "/properties/containerSignatures/items/properties/id/type", "value": "string"},
+    {"op": "replace", "path": "/properties/containerSignatures/items/properties/files/items/required", "value": ["path"]},
+    {"op": "replace", "path": "/properties/containerSignatures/items/properties/files/items/properties/byteSequences/items/required", "value": []},
+    {"op": "replace", "path": "/properties/containerSignatures/items/properties/files/items/properties/byteSequences/items/properties/subSequences/items/required", "value": []},
+    {"op": "replace", "path": "/required", "value": ["formatName", "internalSignatures"]}
+  ]
+}
