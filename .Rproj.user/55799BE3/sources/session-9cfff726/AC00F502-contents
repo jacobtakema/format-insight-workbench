@@ -1,5 +1,0 @@
-.r-lib/
-.renv-cache/
-data/*.duckdb
-data/*.duckdb.wal
-data/raw/*.xslx

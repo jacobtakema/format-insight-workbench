@@ -129,6 +129,7 @@ parse_pronom_repository_archive <- function(archive_path, extraction_directory,
       sprintf("Parsed %d of %d records", index, nrow(discovery$records))
     )
   }
+  records <- reject_duplicate_repository_record_ids(records)
   issue_rows <- do.call(rbind, lapply(records, `[[`, "issues"))
   parsed_records <- Filter(function(record) record$parse_status == "parsed", records)
   puids <- vapply(records, `[[`, character(1), "source_record_identifier")
@@ -147,6 +148,38 @@ parse_pronom_repository_archive <- function(archive_path, extraction_directory,
       error_count = if (is.null(issue_rows)) 0L else sum(tolower(issue_rows$severity) == "error")
     )
   )
+}
+
+reject_duplicate_repository_record_ids <- function(records) {
+  record_ids <- vapply(records, function(record) {
+    if (is.null(record$parsed) || nrow(record$parsed$formats) == 0L) {
+      return(NA_character_)
+    }
+    record$parsed$formats$source_record_id[[1L]]
+  }, character(1))
+  duplicated_ids <- unique(record_ids[
+    !is.na(record_ids) &
+      (duplicated(record_ids) | duplicated(record_ids, fromLast = TRUE))
+  ])
+  if (length(duplicated_ids) == 0L) return(records)
+
+  for (index in which(record_ids %in% duplicated_ids)) {
+    record_id <- record_ids[[index]]
+    records[[index]]$issues <- rbind(records[[index]]$issues, data.frame(
+      severity = "error",
+      issue_code = "duplicate_source_record_id",
+      message = sprintf(
+        "PRONOM fileFormatID '%s' occurs in more than one repository record.",
+        record_id
+      ),
+      raw_value = record_id,
+      validation_layer = "semantic",
+      stringsAsFactors = FALSE
+    ))
+    records[[index]]$parse_status <- "rejected"
+    records[[index]]$parsed <- NULL
+  }
+  records
 }
 
 combine_parser_tables <- function(records, table) {

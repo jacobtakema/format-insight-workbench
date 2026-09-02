@@ -124,6 +124,33 @@ test_that("repository parsing retains a parent with an empty external signature"
   expect_equal(record$extensions$extension, "mp4")
 })
 
+test_that("repository parsing preserves and rejects duplicate PRONOM record IDs", {
+  record <- function(puid, name) paste0(
+    '{"fileFormatID":3983,"formatName":"', name, '",',
+    '"identifiers":[{"identifierText":"', puid,
+    '","identifierType":"PUID"}],"internalSignatures":[]}'
+  )
+  archive <- create_repository_archive(list(
+    "signatures/fmt/2106.json" = record("fmt/2106", "First format"),
+    "signatures/fmt/2107.json" = record("fmt/2107", "Second format")
+  ))
+  extraction <- tempfile("extract-")
+  dir.create(extraction)
+  on.exit(unlink(c(archive, extraction), recursive = TRUE), add = TRUE)
+
+  parsed <- parse_pronom_repository_archive(archive, extraction)
+
+  expect_equal(parsed$summary$parsed_count, 0L)
+  expect_equal(parsed$summary$rejected_count, 2L)
+  expect_equal(parsed$summary$error_count, 2L)
+  expect_true(all(vapply(parsed$records, function(value) {
+    "duplicate_source_record_id" %in% value$issues$issue_code
+  }, logical(1))))
+  expect_true(all(vapply(parsed$records, function(value) {
+    identical(value$parse_status, "rejected") && is.null(value$parsed)
+  }, logical(1))))
+})
+
 test_that("repository import is transactional, rejects duplicates and cleans temporary files", {
   archive <- create_repository_archive(list(
     "signatures/fmt/1.json" = project_path("data", "raw", "1.json"),
