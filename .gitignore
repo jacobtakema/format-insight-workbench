@@ -6,3 +6,7 @@ data/raw/*
 !data/raw/.gitkeep
 .Rproj.user
 .positai
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
