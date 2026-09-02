@@ -10,3 +10,4 @@ data/raw/*
 .RData
 .Ruserdata
 .Rproj.user/
+*.log
